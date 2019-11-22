@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>sécurité et connexion</title>
+
+    <link href="/vendor/bootstrap-4.2.1-dist/css/bootstrap.min.css" type="text/css" rel="stylesheet"/>
+    <link href="/css/style.css" type="text/css" rel="stylesheet"/>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>
+    <script src="/vendor/jquery/jquery.min.js"></script>
+    <script src="/vendor/bootstrap-4.2.1-dist/js/bootstrap.min.js"></script>
+    <script src="/vendor/Parsley.js-2.8.1/dist/parsley.min.js"></script>
+    <script src="/vendor/Parsley.js-2.8.1/dist/i18n/fr.js"></script>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/js/socket.js"></script>
+
+</head>
+
+<body>
+<div class="wrapper --bg-light">
+    <%- include('header-authenticated') %>
+
+    <div class="mx-2">
+        <div class="container">
+            <!-- flash msgs -->
+            <section class="row">
+                <% if(locals.flash) { %>
+                    <div class="col-lg-6 mx-auto alert alert-info mt-2">
+                        <%= locals.flash['info'] %>
+                    </div>
+                <% } %>
+            </section>
+
+            <section class="row">
+                <div class="col-lg-6 bg-light mx-auto my-3 p-4">
+                    <h5 class="text-dark text-center mb-4">
+                        Paramétres de compte
+                    </h5>
+                    <a href="/email-update" class="text-secondary d-flex p-2 mb-2 decoration-none">
+                        Modifier l'adresse email
+                        <img src="img/right-arrow.png" class="ml-auto r-arrow"/>
+                    </a>
+                    <a href="/passwordUpdate" class="text-secondary d-flex p-2 mb-2 decoration-none">
+                        Modifier le mot de passe
+                        <img src="img/right-arrow.png" class="ml-auto r-arrow"/>
+                    </a>
+                </div>
+            </section>
+        </div>
+    </div>
+
+</div>
+<script src="/js/passwordUpdate.js"></script>
+</body>
+</html>

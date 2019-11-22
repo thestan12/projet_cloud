@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>FindMe</title>
+
+    <link href="/vendor/bootstrap-4.2.1-dist/css/bootstrap.min.css" type="text/css" rel="stylesheet"/>
+    <link href="/css/style.css" type="text/css" rel="stylesheet"/>
+
+    <script src="/vendor/jquery/jquery.min.js"></script>
+    <script src="/vendor/bootstrap-4.2.1-dist/js/bootstrap.min.js"></script>
+    <script src="/vendor/Parsley.js-2.8.1/dist/parsley.min.js"></script>
+    <script src="/vendor/Parsley.js-2.8.1/dist/i18n/fr.js"></script>
+</head>
+<body>
+<div class="wrapper --bg-light">
+    <%- include('header-anonym') %>
+
+    <div class="mx-2">
+        <div class="container">
+            <section class="row">
+                <% if(locals.flash) { %>
+                    <div class="col-lg-6 mx-auto alert alert-info mt-2">
+                        <%= locals.flash['info'] %>
+                    </div>
+                <% } %>
+            </section>
+
+            <section class="row">
+                <div class="col-lg-6 bg-light mx-auto  p-4 my-3">
+                    <h5 class="text-dark text-center mb-4">
+                        Se connecter avec un email
+                    </h5>
+                    <form action="/login" method="post" class="form mb-4" data-parsley-validate>
+                        <input name="email" type="email" class="form-control mb-2" placeholder="Adresse email" required
+                        />
+                        <input name="psw" type="password" class="form-control mb-2" placeholder="Mot de passe" required
+                        />
+                        <div class="mb-3">
+                            Mot de passe oublié?
+                            <a href="/resetMdp" class="text-info">
+                                Récupérer votre compte
+                            </a>
+                        </div>
+                        <input type="submit" value="Se connecter" class="btn --btn-primary mb-2 mx-auto d-block"/>
+                    </form>
+                    <h6 class="text-dark text-center border-top pointable pt-2">
+                    <span>
+                        Vous n'avez pas de compte?
+                    </span>
+                        <a href="/" class="text-info font-weight-normal">
+                            S'inscrire sur Xcloud
+                        </a>
+                    </h6>
+                </div>
+            </section>
+        </div>
+    </div>
+
+</div>
+</body>
+</html>

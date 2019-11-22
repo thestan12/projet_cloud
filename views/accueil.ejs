@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>cloudX</title>
+
+    <LINK REL="stylesheet" TYPE="text/css" HREF="/css/style.css">
+    <LINK REL="stylesheet" TYPE="text/css" HREF="/css/accueil.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>
+    <script src="/vendor/jquery/jquery.min.js"></script>
+
+    <link href="/vendor/bootstrap-4.2.1-dist/css/bootstrap.min.css" type="text/css" rel="stylesheet"/>
+    <script src="/vendor/jquery/jquery.min.js"></script>
+    <script src="/vendor/bootstrap-4.2.1-dist/js/bootstrap.min.js"></script>
+
+
+</head>
+<body>
+<div class="wrapper --bg-light">
+  <%- include('header-authenticated') %>
+  <div class="mx-2 row">
+      <div class="col-md-6">
+        <table class="table">
+          <thead>
+            <tr>
+              <th scope="col">File</th>
+              <th scope="col">FfileName</th>
+              <th scope="col">creationDate</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row">1</th>
+                <td>name1</td>
+                <td>2019-11-22</td>
+            </tr>
+            <tr>
+              <th scope="row">2</th>
+              <td>name2</td>
+              <td>2019-11-23</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="col-md-6">
+        <div class="col-md-12">
+          &nbsp;
+        </div>
+        <div class="col-md-12">
+          <form class="md-form">
+            <div class="file-field">
+              <div class="z-depth-1-half mb-4">
+                <img src="https://mdbootstrap.com/img/Photos/Others/placeholder.jpg" class="img-upload"
+                  alt="example placeholder">
+              </div>
+              <div class="d-flex justify-content-center">
+                <div class="btn btn-mdb-color btn-rounded float-left">
+                  <span>Choose file</span>
+                  <input type="file">
+                </div>
+              </div>
+            </div>
+          </form>
+          </div>
+        </div>
+      </div>
+
+  </div>
+</div>
+
+</body>
+</html>
