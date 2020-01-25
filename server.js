@@ -3,7 +3,6 @@ const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
 const session = require('express-session');
-const fs = require('fs');
 const formidable = require('formidable');
 
 //pour la la récupération de mot de passe
@@ -13,7 +12,8 @@ const LocalStrategy = require('passport-local').Strategy;
 const bcrypt = require('bcrypt-nodejs');
 const async = require('async');
 const crypto = require('crypto');
-
+const jwt = require('jsonwebtoken');
+const fs = require('fs');
 //Moteur de template
 app.set('view engine', 'ejs');
 
@@ -32,9 +32,6 @@ app.use(require('./middlewares/flash'));
 
 //pour les redirections de sécurité, lorsque le serveur subit un modification
 //alors redirection automatique vers la page de login
-app.use(require('./middlewares/redirector'));
-
-// middleware calculant les nombres des messages et notification non lus
 
 
 //les gets
@@ -161,34 +158,260 @@ app.post('/passwordUpdate', (request, response) => {
         }
     })
 });
+
+app.get('/users', verifyToken, (req,res) => {
+  jwt.verify(req.token, 'secretkey', {expiresIn: '60s'}, (err, authData) => {
+    if (err) {
+      res.sendStatus(403);
+    } else {
+      res.json({
+        message: 'Getting users ..',
+        authData
+      });
+
+    }
+  })
+});
+// Verify Token
+function verifyToken(req, res, next) {
+    // Get auth header value
+    const bearerHeader = req.headers['authorization'];
+    // check if bearer is undefined
+    if (typeof bearerHeader !== 'undefined') {
+        const bearer = bearerHeader.split(' ');
+        const bearerToken = bearer[1];
+        req.token = bearerToken;
+        next();
+    } else {
+        //  Forbidden
+        res.sendStatus(403);
+    }
+}
 //pour verifier le saisie de l'utilisateur dans la page de login ainsi pour la redirection vers la page d'accueil
 app.post('/login', (request, response) => {
-    let fetchID = require("./models/fetchID")
-    fetchID.check(request, response, function (request, response, err, result) {
-        if (err) {
-            throw err
-        }
-        else {
-            if (result.length > 0) {
-                if (result[0].password == request.body.psw) {
-                    request.session.email = request.body.email;
-                    request.session.password = request.body.psw;
-                    request.session.user = result[0];
-                    response.redirect('/accueil');
-                }
-                else {
-                    request.flash('info', err ? 'Erreur interne est survenue!' : 'Adresse email ou mot de passe ne correspondent pas!')
-                    response.redirect('/login')
-                    return
-                }
+  let fetchID = require("./models/fetchID")
+fetchID.check(request, response, function (request, response, err, result) {
+    if (err) {
+        throw err
+    }
+    else {
+        if (result.length > 0) {
+            if (result[0].password == request.body.psw) {
+                request.session.email = request.body.email;
+                request.session.password = request.body.psw;
+                request.session.user = result[0];
+                const user = result[0];
+                jwt.sign({user}, 'secretkey', (err, token) => {
+                    response.json({
+                        token
+                    })
+                })
+                response.redirect('/accueil');
             }
             else {
-                request.flash('info', err ? 'Erreur interne est survenue!' : "Adresse email n'existe pas !")
+                request.flash('info', err ? 'Erreur interne est survenue!' : 'Adresse email ou mot de passe ne correspondent pas!')
                 response.redirect('/login')
                 return
             }
-
         }
-    })
+        else {
+            request.flash('info', err ? 'Erreur interne est survenue!' : "Adresse email n'existe pas !")
+            response.redirect('/login')
+            return
+        }
+
+    }
 });
-let server = app.listen(8000);
+});
+app.get('/files', (request, response) => {
+    let FileManager = require('./models/FileManager');
+    FileManager.findFiles(request, function (result) {
+      console.log('result =', result);
+        response.json(result);
+    });
+});
+
+
+
+if (process.env.NODE_ENV !== 'production') {
+    require('dotenv').config({path:'./.env'});
+}
+const path = require('path');
+const storage = require('azure-storage');
+const blobService = storage.createBlobService();
+
+const listContainers = async () => {
+    return new Promise((resolve, reject) => {
+        blobService.listContainersSegmented(null, (err, data) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve({ message: `${data.entries.length} containers`, containers: data.entries });
+            }
+        });
+    });
+};
+
+const createContainer = async (containerName) => {
+    return new Promise((resolve, reject) => {
+        blobService.createContainerIfNotExists(containerName, { publicAccessLevel: 'blob' }, err => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve({ message: `Container '${containerName}' created` });
+            }
+        });
+    });
+};
+
+const uploadString = async (containerName, blobName, text) => {
+    return new Promise((resolve, reject) => {
+        blobService.createBlockBlobFromText(containerName, blobName, text, err => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve({ message: `Text "${text}" is written to blob storage` });
+            }
+        });
+    });
+};
+
+const uploadLocalFile = async (containerName, filePath) => {
+    return new Promise((resolve, reject) => {
+        const fullPath = path.resolve(filePath);
+        const blobName = path.basename(filePath);
+        blobService.createBlockBlobFromLocalFile(containerName, blobName, fullPath, err => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve({ message: `Local file "${filePath}" is uploaded` });
+            }
+        });
+    });
+};
+
+const listBlobs = async (containerName) => {
+    return new Promise((resolve, reject) => {
+        blobService.listBlobsSegmented(containerName, null, (err, data) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve({ message: `${data.entries.length} blobs in '${containerName}'`, blobs: data.entries });
+            }
+        });
+    });
+};
+
+const downloadBlob = async (containerName, blobName) => {
+    const dowloadFilePath = path.resolve('./' + blobName);
+
+    return new Promise((resolve, reject) => {
+        blobService.getBlobToStream(containerName, blobName, fs.createWriteStream(dowloadFilePath), (err, data) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve({ message: `Blob downloaded "${data}"`, text: data });
+            }
+        });
+    });
+};
+
+const deleteBlob = async (containerName, blobName) => {
+    return new Promise((resolve, reject) => {
+        blobService.deleteBlobIfExists(containerName, blobName, err => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve({ message: `Block blob '${blobName}' deleted` });
+            }
+        });
+    });
+};
+
+const deleteContainer = async (containerName) => {
+    return new Promise((resolve, reject) => {
+        blobService.deleteContainer(containerName, err => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve({ message: `Container '${containerName}' deleted` });
+            }
+        });
+    });
+};
+//file upload
+app.post('/file-upload', (request, response) => {
+  console.log('hello');
+  let form = new formidable.IncomingForm()
+  form.parse(request, async function (err, fields, files) {
+    let UploadFile = require('./models/uploadFile')
+      let file = files.filetoupload;
+      // console.log('file=', file);
+      let idUser = (request.session.user && request.session.user.id) ? request.session.user.id : 1;
+      // console.log('user =', request.session.user);
+      let fileUploaded = '/files/' + idUser + '_' + file.name;
+      if (file.size != 0) {
+          fs.rename(file.path, './public' + fileUploaded, function (err) {
+              if (err) {
+                  throw err
+              }
+          });
+          let content = {
+            fileName: file.name,
+            userId: request.session.user.id
+          }
+          console.log('request.session.user =', request.session.user);
+          await executeUpload('/var/www/projet_cloud/public'+fileUploaded, request.session.user.id+'-'+request.session.user.last_name);
+          UploadFile.update(request, content, function () {
+            console.log('fileName is added to the dataBase');
+          });
+      }
+  });
+  response.redirect('/accueil');
+});
+
+async function executeUpload(file, containerName) {
+    console.log('trying to upload * ', file, ' * to container ', containerName);
+    let response;
+    console.log("Containers:");
+    response = await listContainers();
+    const containerDoesNotExist = response.containers.findIndex((container) => container.name === containerName) === -1;
+
+    if (containerDoesNotExist) {
+        await createContainer(containerName);
+        console.log(`Container "${containerName}" is created`);
+    }
+    response = await uploadLocalFile(containerName, file);
+    console.log(response.message);
+
+}
+async function executeDownload(containerName, fileName) {
+  console.log('trying to download * ', file, ' * from container ', containerName);
+  let response;
+  console.log("Containers:");
+  response = await listContainers();
+  const containerExist = response.containers.findIndex((container) => container.name === containerName) === -1;
+  if (containerExist) {
+    response = await downloadBlob(containerName, fileName);
+    console.log(`Downloaded blob content: ${response}"`);
+  } else {
+    console.log('container ', containerName,' does not exist');
+  }
+}
+async function executeDelete(containerName, fileName) {
+  console.log('trying to delete * ', file, ' * from container ', containerName);
+  let response;
+  console.log("Containers:");
+  response = await listContainers();
+  const containerExist = response.containers.findIndex((container) => container.name === containerName) === -1;
+  if (containerExist) {
+    await deleteBlob(containerName, blobName);
+    console.log(`Blob "${blobName}" is deleted`);
+  } else {
+    console.log('container ', containerName,' does not exist');
+  }
+}
+
+let server = app.listen(8001, () => console.log('Server started on port ', 8001));
+
+// DANS TERRAFORM IL FAUT CREER UN APPsERVICE 

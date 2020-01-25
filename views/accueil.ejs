@@ -22,35 +22,39 @@
 <div class="wrapper --bg-light">
   <%- include('header-authenticated') %>
   <div class="mx-2 row">
-      <div class="col-md-6">
-        <table class="table">
-          <thead>
-            <tr>
-              <th scope="col">File</th>
-              <th scope="col">FfileName</th>
-              <th scope="col">creationDate</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <th scope="row">1</th>
-                <td>name1</td>
-                <td>2019-11-22</td>
-            </tr>
-            <tr>
-              <th scope="row">2</th>
-              <td>name2</td>
-              <td>2019-11-23</td>
-            </tr>
-          </tbody>
-        </table>
+        <script>
+          let files = [];
+          var myTable;
+          fetchFiles();
+          function fetchFiles() {
+              fetch('/files', {}).then(function (response) {
+                  return response.json();
+              }).then(function(data) {
+                  files = data;
+                  myTable= "<table><tr><td style='width: 100px; color: red;'>File name</td>";
+                  myTable+="<tr><td style='width: 100px;'>------------------------------------------------------------------------------------------</td></tr>";
+                  for (var i=0; i < files.length; i++) {
+                    myTable+="<tr><td style='width: 100px;'>File :" + files[i].fileName + "</td></tr>";
+                    if (i!==files.length -1) {
+                      myTable+="<tr><td style='width: 100px;'>------------------------------------------------------------------------------------------</td></tr>";
+                    }
+                  }
+                 myTable+="</table>";
+                 $("#message").html(myTable);
+              });
+          }
+
+
+     </script>
+       <div class="col-md-6">
+            <p id="message"></p>
       </div>
       <div class="col-md-6">
         <div class="col-md-12">
           &nbsp;
         </div>
         <div class="col-md-12">
-          <form class="md-form">
+          <form class="md-form" class="md-form" action="/file-upload" method="post" enctype="multipart/form-data">
             <div class="file-field">
               <div class="z-depth-1-half mb-4">
                 <img src="https://mdbootstrap.com/img/Photos/Others/placeholder.jpg" class="img-upload"
@@ -59,17 +63,18 @@
               <div class="d-flex justify-content-center">
                 <div class="btn btn-mdb-color btn-rounded float-left">
                   <span>Choose file</span>
-                  <input type="file">
+                  <input type="file" accept = "file_extension" name="filetoupload" id="file-selector">
                 </div>
               </div>
+              <input type="submit" class="btn --btn-primary" value="Upload"/>
             </div>
           </form>
           </div>
         </div>
       </div>
-
+    </div>
   </div>
-</div>
-
+  <script>
+  </script>
 </body>
 </html>
