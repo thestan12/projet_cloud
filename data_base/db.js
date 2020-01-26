@@ -1,8 +1,8 @@
 let mysql = require('mysql');
 let connection = mysql.createConnection({
-    host: 'localhost',
-    user: 'moxa',
-    password: '0000',
+    host: 'mysqlservercloudx',
+    user: 'ad007min',
+    password: '4-v3ry-53cr37-p455w0rd',
     database: 'cloud',
     dateStrings: 'date',
 });

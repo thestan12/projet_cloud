@@ -4,7 +4,7 @@ class changeMdp {
 
     static creat(request, content, cb) {
 
-        connection.query('UPDATE user SET `password`=? WHERE email=?',
+        connection.query('UPDATE userclient SET `password`=? WHERE email=?',
             [content.pswNouv, request.session.email], (err, result) => {
 
                 if (err) throw err;

@@ -5,7 +5,7 @@ FileManager = {
     findFiles: function(request, callback) {
         let id = request.session.user.id;
 
-        connection.query('SELECT * FROM file WHERE userId=?',
+        connection.query('SELECT * FROM filesuser WHERE userId=?',
             [id], function(err, result) {
             if(err) {
                 throw err;

@@ -57,7 +57,7 @@ resource "azurerm_sql_firewall_rule" "project_cloud" {
   resource_group_name = "${azurerm_resource_group.project_cloud.name}"
   server_name         = "${azurerm_sql_server.project_cloud.name}"
   start_ip_address    = "0.0.0.0"
-  end_ip_address      = "0.0.0.0"
+  end_ip_address      = "255.255.255.255"
 }
 
 
@@ -72,4 +72,5 @@ resource "azurerm_sql_database" "project_cloud" {
     environment = "production"
   }
 }
+
 

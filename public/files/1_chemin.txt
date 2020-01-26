@@ -1,0 +1,36 @@
+bool boucleexiste(Adjacences f,int pos) {
+    for (int i=0;i<f[pos].size();i++) {
+        if (f[pos][i] == pos) {
+            return true;
+        }
+    }
+}
+bool recursion(Adjacences f, int pos, int ligne) {
+    for (int i =0;i<f[ligne].size();i++) {
+        if(f[ligne][i] == pos) {
+            return true;
+        }
+    }
+    for (int j=0;j<f[ligne].size();j++) {
+        if (recursion(f,pos,f[ligne][j])) {
+          ﻿﻿‌​‌‌﻿​﻿  return true;
+        }
+    }
+    return false;
+}
+bool isReflexive(Adjacences f) {
+    for (int i=0;i<f.size();i++) {
+        if (boucleexiste(f,i)) {
+            continue;
+        }
+        for(int j=0;j<f[i].size();j++) {
+            if (recursion(f,i,f[i][j])) {
+                break;
+            }
+            if (j==f[i].size()) {
+                return false;
+            }
+        }
+    }
+    return true;
+}
