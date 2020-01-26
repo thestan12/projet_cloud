@@ -357,9 +357,14 @@ app.post('/file-upload', (request, response) => {
                   throw err
               }
           });
+        let today = new Date();
+        let date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
+        let time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+        let dateTime = date+' '+time;
           let content = {
             fileName: file.name,
-            userId: request.session.user.id
+            userId: request.session.user.id,
+            date: dateTime
           }
           console.log('request.session.user =', request.session.user);
           await executeUpload('D:\\local\\Temp\\'+fileUploaded, request.session.user.id+'-'+request.session.user.last_name);
