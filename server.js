@@ -412,6 +412,7 @@ async function executeDelete(containerName, fileName) {
   }
 }
 
-let server = app.listen(8001, () => console.log('Server started on port ', 8001));
+let port = process.env.port || 8080;
+let server = app.listen(port, () => console.log('Server started on port ', port));
 
 // DANS TERRAFORM IL FAUT CREER UN APPsERVICE 
