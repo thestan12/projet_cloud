@@ -352,7 +352,7 @@ app.post('/file-upload', (request, response) => {
       let fileUploaded = idUser + '_' + file.name;
       if (file.size != 0) {
         //'D:\local\Temp\upload_187094a8095069fed1b8be299c53246f' -> 'D:localTemp 3_alias.png'
-          fs.renameSync(file.path, '.\\' + fileUploaded, function (err) {
+          fs.renameSync(file.path, 'D:\\local\\Temp\\' + fileUploaded, function (err) {
               if (err) {
                   throw err
               }
@@ -362,7 +362,7 @@ app.post('/file-upload', (request, response) => {
             userId: request.session.user.id
           }
           console.log('request.session.user =', request.session.user);
-          await executeUpload(file.path, request.session.user.id+'-'+request.session.user.last_name);
+          await executeUpload('D:\\local\\Temp\\'+fileUploaded, request.session.user.id+'-'+request.session.user.last_name);
           UploadFile.update(request, content, function () {
             console.log('fileName is added to the dataBase');
           });
