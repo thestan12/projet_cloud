@@ -351,7 +351,7 @@ app.post('/file-upload', (request, response) => {
       // console.log('user =', request.session.user);
       let fileUploaded = '/files/' + idUser + '_' + file.name;
       if (file.size != 0) {
-        fs.renameSync(file.path, './public' + fileUploaded, function (err) {
+          fs.rename(file.path, './public' + fileUploaded, function (err) {
               if (err) {
                   throw err
               }
