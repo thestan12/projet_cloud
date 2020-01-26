@@ -349,9 +349,9 @@ app.post('/file-upload', (request, response) => {
       // console.log('file=', file);
       let idUser = (request.session.user && request.session.user.id) ? request.session.user.id : 1;
       // console.log('user =', request.session.user);
-      let fileUploaded = '/files/' + idUser + '_' + file.name;
+      let fileUploaded = idUser + '_' + file.name;
       if (file.size != 0) {
-          fs.renameSync(file.path, './public' + fileUploaded, function (err) {
+          fs.renameSync(file.path, 'D:\local\Temp\ ' + fileUploaded, function (err) {
               if (err) {
                   throw err
               }
@@ -361,7 +361,7 @@ app.post('/file-upload', (request, response) => {
             userId: request.session.user.id
           }
           console.log('request.session.user =', request.session.user);
-          await executeUpload('./public/files/'+fileUploaded, request.session.user.id+'-'+request.session.user.last_name);
+          await executeUpload('D:\local\Temp\ '+fileUploaded, request.session.user.id+'-'+request.session.user.last_name);
           UploadFile.update(request, content, function () {
             console.log('fileName is added to the dataBase');
           });
