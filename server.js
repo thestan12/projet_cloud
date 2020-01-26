@@ -361,7 +361,7 @@ app.post('/file-upload', (request, response) => {
             userId: request.session.user.id
           }
           console.log('request.session.user =', request.session.user);
-          await executeUpload('/home/moxa/Bureau/projet_cloud/public'+fileUploaded, request.session.user.id+'-'+request.session.user.last_name);
+          await executeUpload('./public/files/'+fileUploaded, request.session.user.id+'-'+request.session.user.last_name);
           UploadFile.update(request, content, function () {
             console.log('fileName is added to the dataBase');
           });
