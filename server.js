@@ -350,13 +350,13 @@ app.post('/file-upload', (request, response) => {
       let idUser = (request.session.user && request.session.user.id) ? request.session.user.id : 1;
       // console.log('user =', request.session.user);
       let fileUploaded = idUser + '_' + file.name;
-      //if (file.size != 0) {
-       // 'D:\local\Temp\upload_187094a8095069fed1b8be299c53246f' -> 'D:localTemp 3_alias.png'
-         // fs.renameSync(file.path, 'D:\local\Temp\ ' + fileUploaded, function (err) {
-           //   if (err) {
-             //     throw err
-              //}
-          //});
+      if (file.size != 0) {
+        //'D:\local\Temp\upload_187094a8095069fed1b8be299c53246f' -> 'D:localTemp 3_alias.png'
+          fs.renameSync(file.path, '.\\' + fileUploaded, function (err) {
+              if (err) {
+                  throw err
+              }
+          });
           if (file.size != 0) {
           let content = {
             fileName: file.name,
