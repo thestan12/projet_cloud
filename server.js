@@ -357,6 +357,7 @@ app.post('/file-upload', (request, response) => {
              //     throw err
               //}
           //});
+          if (file.size != 0) {
           let content = {
             fileName: file.name,
             userId: request.session.user.id
