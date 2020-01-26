@@ -1,8 +1,8 @@
 let mysql = require('mysql');
 let connection = mysql.createConnection({
-    host: 'mysqlservercloudx.database.windows.net',
-    user: 'ad007min',
-    password: '4-v3ry-53cr37-p455w0rd',
+    host: 'cloud-esgi.mysql.database.azure.com',
+    user: 'esgi_cloud_admin@cloud-esgi',
+    password: 'Thebeststanpasswordever95',
     database: 'cloud',
     dateStrings: 'date',
 });
