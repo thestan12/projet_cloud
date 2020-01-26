@@ -233,9 +233,9 @@ app.get('/files', (request, response) => {
 
 
 
-if (process.env.NODE_ENV !== 'production') {
+//if (process.env.NODE_ENV !== 'production') {
     require('dotenv').config({path:'./.env'});
-}
+//}
 const path = require('path');
 const storage = require('azure-storage');
 const blobService = storage.createBlobService();
