@@ -37,14 +37,14 @@ resource "azurerm_app_service" "project_cloud" {
   }
   connection_string {
     name  = "Database"
-    type  = "SQLServer"
-    value = "Server=mysqlservercloudx.mydomain.com;Integrated Security=SSPI"
+    type  = "MySql"
+    value = "Server=mysql-server-cloudx.mydomain.com;Integrated Security=SSPI"
   }
 }
 
 
 
-resource "azurerm_mysql_server" "example" {
+resource "azurerm_mysql_server" "project_cloud" {
   name                = "mysql-server-cloudx"
   location            = "${azurerm_resource_group.project_cloud.location}"
   resource_group_name = "${azurerm_resource_group.project_cloud.name}"
@@ -57,14 +57,28 @@ resource "azurerm_mysql_server" "example" {
     geo_redundant_backup  = "Disabled"
   }
 
-  administrator_login          = "esgi_cloud_admin@cloud-esgi"
+  
+  administrator_login          = "esgi_cloud_admin"
   administrator_login_password = "Thebeststanpasswordever95"
   version                      = "5.7"
   ssl_enforcement              = "Disabled"
 }
 
+resource "azurerm_mysql_firewall_rule" "project_cloud" {
+  name                = "office"
+  resource_group_name = "${azurerm_resource_group.project_cloud.name}"
+  server_name         = "${azurerm_mysql_server.project_cloud.name}"
+  start_ip_address    = "0.0.0.0"
+  end_ip_address      = "255.255.255.255"
+}
 
-
+resource "azurerm_mysql_database" "project_cloud" {
+  name                = "cloud"
+  resource_group_name = "${azurerm_resource_group.project_cloud.name}"
+  server_name         = "${azurerm_mysql_server.project_cloud.name}"
+  charset             = "utf8"
+  collation           = "utf8_unicode_ci"
+}
 
 /*
 
