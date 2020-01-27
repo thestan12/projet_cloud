@@ -43,6 +43,31 @@ resource "azurerm_app_service" "project_cloud" {
 }
 
 
+
+resource "azurerm_mysql_server" "example" {
+  name                = "mysql-server-cloudx"
+  location            = "${azurerm_resource_group.project_cloud.location}"
+  resource_group_name = "${azurerm_resource_group.project_cloud.name}"
+
+  sku_name = "B_Gen5_2"
+
+  storage_profile {
+    storage_mb            = 5120
+    backup_retention_days = 7
+    geo_redundant_backup  = "Disabled"
+  }
+
+  administrator_login          = "esgi_cloud_admin@cloud-esgi"
+  administrator_login_password = "Thebeststanpasswordever95"
+  version                      = "5.7"
+  ssl_enforcement              = "Disabled"
+}
+
+
+
+
+/*
+
 resource "azurerm_sql_server" "project_cloud" {
   name                         = "mysqlservercloudx"
   resource_group_name          = "${azurerm_resource_group.project_cloud.name}"
@@ -51,6 +76,7 @@ resource "azurerm_sql_server" "project_cloud" {
   administrator_login          = "ad007min"
   administrator_login_password = "4-v3ry-53cr37-p455w0rd"
 }
+
 
 resource "azurerm_sql_firewall_rule" "project_cloud" {
   name                = "FirewallRule1"
@@ -73,4 +99,4 @@ resource "azurerm_sql_database" "project_cloud" {
   }
 }
 
-
+*/
