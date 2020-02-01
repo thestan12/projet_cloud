@@ -22,34 +22,63 @@
 <div class="wrapper --bg-light">
   <%- include('header-authenticated') %>
   <div class="mx-2 row">
-        <script>
-          let files = [];
-          var myTable;
-          fetchFiles();
-          function fetchFiles() {
-              fetch('/files', {}).then(function (response) {
-                  return response.json();
-              }).then(function(data) {
-                  files = data;
-                  myTable= "<table><tr><td style='width: 100px; color: red;'>File name</td>";
+    <script>
+		function fileDelete(val) {
+	  		fetch('/files', {}).then(function (response) {
+	      		return response.json();
+	      	}).then(function(data) {
+		        let file = {
+		            fileName: data[val]
+		        }
+		        fetch('/delete-file', {
+		            method: 'POST',
+		            body: JSON.stringify(file),
+		            headers: {
+		                'Content-Type': 'application/json',
+		            }
+		        });
+			});
+		}
+      let files = [];
+      var myTable;
+      fetchFiles();
+      function fetchFiles() {
+          fetch('/files', {}).then(function (response) {
+              return response.json();
+          }).then(function(data) {
+              files = data;
+              myTable= "<table class=\"table table-hover\"><thead><tr>";
+              myTable+= "<th scope=\"col\">#</th>";
+              myTable+= "<th scope=\"col\">File name</th>";
+              myTable+= "<th scope=\"col\">date</th>";
+              myTable+= "<th scope=\"col\">Download</th>";
+              myTable+= "<th scope=\"col\">Delete</th>";
+              myTable+= "</tr></thead><tbody>";
+              //<tr><td style='width: 100px; color: red;'>File name</td>";
+              //myTable+="<tr><td style='width: 100px;'>------------------------------------------------------------------------------------------</td></tr>";
+              for (var i=0; i < files.length; i++) {
+              	myTable+="<tr><th scope=\"row\">"+ i +"</th>";
+                myTable+="<td>" + files[i].fileName + "</td>";
+                myTable+="<td>" + files[i].date + "</td>";
+                myTable+="<td> <button type=\"button\" class=\"btn btn-outline-primary btn-sm\"><img src=\"img/download.png\" width=\"20\" height=\"20\"></button></td>";
+                myTable+="<td> <button type=\"button\" class=\"btn btn-outline-danger btn-sm\" onclick=\"fileDelete("+i+");\"><img src=\"img/trash.png\" width=\"20\" height=\"20\"></button></td>";
+                myTable+="</tr>"
+                /*if (i!==files.length -1) {
                   myTable+="<tr><td style='width: 100px;'>------------------------------------------------------------------------------------------</td></tr>";
-                  for (var i=0; i < files.length; i++) {
-                    myTable+="<tr><td style='width: 100px;'>File :" + files[i].fileName + "            "+ files[i].date + "</td></tr>";
-                    if (i!==files.length -1) {
-                      myTable+="<tr><td style='width: 100px;'>------------------------------------------------------------------------------------------</td></tr>";
-                    }
-                  }
-                 myTable+="</table>";
-                 $("#message").html(myTable);
-              });
-          }
+                }*/	
+              }
+             myTable+="</tbody></table>";
+             $("#message").html(myTable);
+          });
+      }
 
 
      </script>
-       <div class="col-md-6">
+       <div class="col-md-7">
             <p id="message"></p>
+            <center><button type="button" class="btn btn-dark" onClick="window.location.reload();">Refresh</button></center>
       </div>
-      <div class="col-md-6">
+      <div class="col-md-4">
         <div class="col-md-12">
           &nbsp;
         </div>
@@ -66,7 +95,7 @@
                   <input type="file" accept = "file_extension" name="filetoupload" id="file-selector">
                 </div>
               </div>
-              <input type="submit" class="btn --btn-primary" value="Upload"/>
+              <center><button class="btn btn-primary btn-sm" type="submit">Upload</button></center>
             </div>
           </form>
           </div>
