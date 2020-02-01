@@ -320,6 +320,33 @@ const createContainer = async (containerName) => {
     });
 };
 
+const downloadBlob = async (containerName, blobName) => {
+    const dowloadFilePath = path.resolve('./' + blobName);
+
+    return new Promise((resolve, reject) => {
+        blobService.getBlobToStream(containerName, blobName, fs.createWriteStream(dowloadFilePath), (err, data) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve({ message: `Blob downloaded "${data}"`, text: data });
+            }
+        });
+    });
+};
+
+const deleteBlob = async (containerName, blobName) => {
+    return new Promise((resolve, reject) => {
+        blobService.deleteBlobIfExists(containerName, blobName, err => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve({ message: `Block blob '${blobName}' deleted` });
+            }
+        });
+    });
+};
+
+
 async function executeDelete(containerName, fileName) {
   console.log('trying to delete * ', fileName, ' * from container ', containerName);
   let response;
