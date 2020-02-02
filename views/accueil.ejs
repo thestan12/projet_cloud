@@ -68,7 +68,7 @@
               myTable+= "<th scope=\"col\">#</th>";
               myTable+= "<th scope=\"col\">File name</th>";
               myTable+= "<th scope=\"col\">date</th>";
-              myTable+= "<th scope=\"col\">Download</th>";
+              myTable+= "<th scope=\"col\">View</th>";
               myTable+= "<th scope=\"col\">Delete</th>";
               myTable+= "</tr></thead><tbody>";
               //<tr><td style='width: 100px; color: red;'>File name</td>";
@@ -77,7 +77,7 @@
               	myTable+="<tr><th scope=\"row\">"+ i +"</th>";
                 myTable+="<td>" + files[i].fileName + "</td>";
                 myTable+="<td>" + files[i].date + "</td>";
-                myTable+="<td> <button type=\"button\" class=\"btn btn-outline-primary btn-sm\" onclick=\"download("+i+");\"><img src=\"img/download.png\" width=\"20\" height=\"20\"></button></td>";
+                myTable+="<td> <button type=\"button\" class=\"btn btn-outline-primary btn-sm\" onclick=\"download("+i+");\"><img src=\"img/eye.png\" width=\"20\" height=\"20\"></button></td>";
                 myTable+="<td> <button type=\"button\" class=\"btn btn-outline-danger btn-sm\" onclick=\"fileDelete("+i+");\"><img src=\"img/trash.png\" width=\"20\" height=\"20\"></button></td>";
                 myTable+="</tr>"
                 /*if (i!==files.length -1) {
