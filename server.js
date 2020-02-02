@@ -285,6 +285,8 @@ app.post('/delete-file', async function (request, response)  {
 
 
 app.post('/download-file', async function (request, response)  {
+  console.log('hello world');
+  await console.log(blobService.getUrl(request.session.user.id+'-'+request.session.user.last_name, request.session.user.id+'_'+request.body.fileName.fileName));
   await opn(blobService.getUrl(request.session.user.id+'-'+request.session.user.last_name, request.session.user.id+'_'+request.body.fileName.fileName));
   //await executeDownload(request.session.user.id+'-'+request.session.user.last_name, request.session.user.id+'_'+request.body.fileName.fileName);
 });
