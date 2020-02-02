@@ -369,7 +369,7 @@ const createContainer = async (containerName) => {
 };
 
 const downloadBlob = async (containerName, blobName) => {
-    const dowloadFilePath = path.resolve('./' + blobName);
+    const dowloadFilePath = path.resolve(blobName);
     return new Promise((resolve, reject) => {
         blobService.getBlobToStream(containerName, blobName, fs.createWriteStream(dowloadFilePath), (err, data) => {
             if (err) {
