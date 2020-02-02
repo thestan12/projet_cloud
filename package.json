@@ -32,8 +32,8 @@
     "passport": "^0.4.0",
     "passport-local": "^1.0.0"
   },
-  "engines" : { 
+  "engines" : {
     "node" : ">=6.9.3",
-    "npm" : "~2.15.9" 	
+    "npm" : "~2.15.9"
     }
 }
