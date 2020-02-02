@@ -9,8 +9,7 @@ const formidable = require('formidable');
 const passport = require('passport');
 const nodemailer = require('nodemailer');
 const LocalStrategy = require('passport-local').Strategy;
-const bcrypt = require('bcrypt');
-const saltRounds = 10;
+const bcrypt = require('bcrypt-nodejs');
 const async = require('async');
 const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
@@ -117,41 +116,22 @@ app.post('/resetMdp', function (req, res, next) {
 });
 
 //pour gérer les donnees de l'inscription transmis de page d'acceuil
-app.post('/login', (request, response) => {
-  let fetchID = require("./models/fetchID")
-fetchID.check(request, response, function (request, response, err, result) {
-    if (err) {
-        throw err
-    }
-    else {
-        if (result.length > 0) {
-            bcrypt.compare(request.body.psw, result[0].password, function (err, res) {
-              if (res == true) {
-                request.session.email = request.body.email;
-                request.session.password = request.body.psw;
-                request.session.user = result[0];
-                const user = result[0];
-                jwt.sign({user}, 'secretkey', (err, token) => {
-                    response.json({
-                        token
-                    })
-                })
-                response.redirect('/accueil');
-              } else {
-                  request.flash('info', err ? 'Erreur interne est survenue!' : 'Adresse email ou mot de passe ne correspondent pas!')
-                  response.redirect('/login')
-                  return
-              }
-            })
+app.post('/', (request, response) => {
+    let flashDataBase = require("./models/flashDataBase")
+    flashDataBase.all(request.body, function (err, result) {
+        if (result.length === 0) {
+            flashDataBase.create(request.body, function () {
+                request.flash('info', 'Compte crée avec succés');
+                response.redirect('/login');
+
+            });
         }
         else {
-            request.flash('info', err ? 'Erreur interne est survenue!' : "Adresse email n'existe pas !")
-            response.redirect('/login')
-            return
+            request.flash('info', 'adresse mail existe déjà !');
+            response.redirect('/login');
         }
 
-    }
-  });
+    });
 });
 //pour modifier le mot de passe
 app.post('/passwordUpdate', (request, response) => {
