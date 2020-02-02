@@ -232,6 +232,10 @@ app.get('/files', (request, response) => {
 });
 
 app.post('/delete-file', async function (request, response)  {
+  let FileManager = require('./models/FileManager');
+  FileManager.deleteFile(request, function (result) {
+    console.log('result = ', result);
+  });
   await executeDelete(request.session.user.id+'-'+request.session.user.last_name, request.body.fileName.fileName);
 });
 

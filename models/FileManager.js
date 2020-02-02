@@ -13,6 +13,19 @@ FileManager = {
 
             callback(JSON.parse(JSON.stringify(result)));
             });
+    },
+
+    deleteFile: function(request, callback) {
+        let id = request.session.user.id;
+        let name = request.body.fileName.fileName;
+
+        connection.query('DELETE FROM filesuser WHERE userId=? and fileName=?',
+            [id, name], function(err, result) {
+            if(err) {
+                throw err;
+            }
+            callback(JSON.parse(JSON.stringify(result)));
+            });
     }
 };
 
