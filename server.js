@@ -232,9 +232,7 @@ app.get('/files', (request, response) => {
 });
 
 app.post('/delete-file', async function (request, response)  {
-    console.log('hello');
-    console.log('fileName =',request.body.fileName.fileName,' ', request.session.user.id,'  ',request.session.user.last_name);
-    await executeDelete(request.session.user.id+'-'+request.session.user.last_name, request.body.fileName.fileName);
+  await executeDelete(request.session.user.id+'-'+request.session.user.last_name, request.body.fileName.fileName);
 });
 
 
@@ -272,7 +270,6 @@ app.post('/file-upload', (request, response) => {
             userId: request.session.user.id,
             date: dateTime
           }
-          console.log('request.session.user =', request.session.user);
           await executeUpload('D:\\local\\Temp\\'+fileUploaded, request.session.user.id+'-'+request.session.user.last_name);
           UploadFile.update(request, content, function () {
             console.log('fileName is added to the dataBase');
@@ -350,31 +347,21 @@ const deleteBlob = async (containerName, blobName) => {
 async function executeDelete(containerName, fileName) {
   console.log('trying to delete * ', fileName, ' * from container ', containerName);
   let response;
-  console.log("Containers:");
-  response = await listContainers();
-  const containerExist = response.containers.findIndex((container) => container.name === containerName) === -1;
-  if (containerExist) {
-    await deleteBlob(containerName, fileName);
-    console.log(`Blob "${fileName}" is deleted`);
-  } else {
-    console.log('container ', containerName,' error deleting file ', fileName);
-  }
+  response = await deleteBlob(containerName, fileName);
+  console.log(response.message);
 }
 
 async function executeUpload(file, containerName) {
     console.log('trying to upload * ', file, ' * to container ', containerName);
     let response;
-    console.log("Containers:");
     response = await listContainers();
     const containerDoesNotExist = response.containers.findIndex((container) => container.name === containerName) === -1;
-
     if (containerDoesNotExist) {
         await createContainer(containerName);
         console.log(`Container "${containerName}" is created`);
     }
     response = await uploadLocalFile(containerName, file);
     console.log(response.message);
-
 }
 async function executeDownload(containerName, fileName) {
   console.log('trying to download * ', file, ' * from container ', containerName);
@@ -393,4 +380,4 @@ async function executeDownload(containerName, fileName) {
 const port = process.env.port || 3000;
 let server = app.listen(port, () => console.log('Server started on port ', port));
 
-// DANS TERRAFORM IL FAUT CREER UN APPsERVICE 
+// DANS TERRAFORM IL FAUT CREER UN APPsERVICE
