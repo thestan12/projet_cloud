@@ -236,7 +236,12 @@ app.post('/delete-file', async function (request, response)  {
   FileManager.deleteFile(request, function (result) {
     console.log('result = ', result);
   });
-  await executeDelete(request.session.user.id+'-'+request.session.user.last_name, request.body.fileName.fileName);
+  await executeDelete(request.session.user.id+'-'+request.session.user.last_name, request.session.user.id+'_'+request.body.fileName.fileName);
+});
+
+
+app.post('/download-file', async function (request, response)  {
+  await executeDownload(request.session.user.id+'-'+request.session.user.last_name, request.session.user.id+'_'+request.body.fileName.fileName);
 });
 
 
@@ -249,7 +254,6 @@ const blobService = storage.createBlobService();
 
 //file upload
 app.post('/file-upload', (request, response) => {
-  console.log('hello');
   let form = new formidable.IncomingForm()
   form.parse(request, async function (err, fields, files) {
     let UploadFile = require('./models/uploadFile')
@@ -323,10 +327,10 @@ const createContainer = async (containerName) => {
 
 const downloadBlob = async (containerName, blobName) => {
     const dowloadFilePath = path.resolve('./' + blobName);
-
     return new Promise((resolve, reject) => {
         blobService.getBlobToStream(containerName, blobName, fs.createWriteStream(dowloadFilePath), (err, data) => {
             if (err) {
+              console.log('error =', err);
                 reject(err);
             } else {
                 resolve({ message: `Blob downloaded "${data}"`, text: data });
@@ -360,6 +364,7 @@ async function executeUpload(file, containerName) {
     let response;
     response = await listContainers();
     const containerDoesNotExist = response.containers.findIndex((container) => container.name === containerName) === -1;
+
     if (containerDoesNotExist) {
         await createContainer(containerName);
         console.log(`Container "${containerName}" is created`);
@@ -367,18 +372,13 @@ async function executeUpload(file, containerName) {
     response = await uploadLocalFile(containerName, file);
     console.log(response.message);
 }
+
 async function executeDownload(containerName, fileName) {
-  console.log('trying to download * ', file, ' * from container ', containerName);
-  let response;
-  console.log("Containers:");
+  console.log('trying to download * ', fileName, ' * from container ', containerName);
   response = await listContainers();
-  const containerExist = response.containers.findIndex((container) => container.name === containerName) === -1;
-  if (containerExist) {
-    response = await downloadBlob(containerName, fileName);
-    console.log(`Downloaded blob content: ${response}"`);
-  } else {
-    console.log('container ', containerName,' does not exist');
-  }
+  console.log('container =', response);
+  response = await downloadBlob(containerName, fileName);
+  console.log(`Downloaded blob content: ${response}"`);
 }
 
 const port = process.env.port || 3000;

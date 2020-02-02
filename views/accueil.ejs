@@ -23,6 +23,23 @@
   <%- include('header-authenticated') %>
   <div class="mx-2 row">
     <script>
+    function download(val) {
+        fetch('/files', {}).then(function (response) {
+            return response.json();
+          }).then(function(data) {
+            let file = {
+                fileName: data[val]
+            }
+            fetch('/download-file', {
+                method: 'POST',
+                body: JSON.stringify(file),
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            });
+      });
+    }
+
 		function fileDelete(val) {
 	  		fetch('/files', {}).then(function (response) {
 	      		return response.json();
@@ -60,12 +77,12 @@
               	myTable+="<tr><th scope=\"row\">"+ i +"</th>";
                 myTable+="<td>" + files[i].fileName + "</td>";
                 myTable+="<td>" + files[i].date + "</td>";
-                myTable+="<td> <button type=\"button\" class=\"btn btn-outline-primary btn-sm\"><img src=\"img/download.png\" width=\"20\" height=\"20\"></button></td>";
+                myTable+="<td> <button type=\"button\" class=\"btn btn-outline-primary btn-sm\" onclick=\"download("+i+");\"><img src=\"img/download.png\" width=\"20\" height=\"20\"></button></td>";
                 myTable+="<td> <button type=\"button\" class=\"btn btn-outline-danger btn-sm\" onclick=\"fileDelete("+i+");\"><img src=\"img/trash.png\" width=\"20\" height=\"20\"></button></td>";
                 myTable+="</tr>"
                 /*if (i!==files.length -1) {
                   myTable+="<tr><td style='width: 100px;'>------------------------------------------------------------------------------------------</td></tr>";
-                }*/	
+                }*/
               }
              myTable+="</tbody></table>";
              $("#message").html(myTable);
