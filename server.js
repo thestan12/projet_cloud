@@ -115,8 +115,31 @@ app.post('/resetMdp', function (req, res, next) {
         res.redirect('/resetMdp');
     });
 });
-
 //pour gérer les donnees de l'inscription transmis de page d'acceuil
+app.post('/', (request, response) => {
+    let flashDataBase = require("./models/flashDataBase")
+    flashDataBase.all(request.body, function (err, result) {
+        if (result.length === 0) {
+            bcrypt.hash(request.body.psw, saltRounds, function (err, hash) {
+              let data = {
+                prenom: request.body.prenom,
+                email: request.body.email,
+                psw: hash
+              };
+              flashDataBase.create(data, function () {
+                request.flash('info', 'Compte crée avec succés');
+                response.redirect('/login');
+
+              });
+            });
+        }
+        else {
+            request.flash('info', 'adresse mail existe déjà !');
+            response.redirect('/login');
+        }
+
+    });
+});
 app.post('/login', (request, response) => {
   let fetchID = require("./models/fetchID")
 fetchID.check(request, response, function (request, response, err, result) {
