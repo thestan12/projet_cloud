@@ -203,18 +203,20 @@ app.post('/passwordUpdate', (request, response) => {
     })
 });
 
-app.get('/users', verifyToken, (req,res) => {
-  jwt.verify(req.token, 'secretkey', {expiresIn: '60s'}, (err, authData) => {
+app.get('/files-for-test', verifyToken, (req,res) => {
+  jwt.verify(req.token, 'secretkey', {expiresIn: '600s'}, (err, authData) => {
     if (err) {
       res.sendStatus(403);
     } else {
-      res.json({
-        message: 'Getting users ..',
-        authData
+      let FileManager = require('./models/FileManager');
+      FileManager.findAllFiles(req, function (result) {
+        res.json({
+          message: result,
+          authData
+        });
       });
-
     }
-  })
+  });
 });
 // Verify Token
 function verifyToken(req, res, next) {
@@ -245,11 +247,9 @@ fetchID.check(request, response, function (request, response, err, result) {
                 request.session.password = request.body.psw;
                 request.session.user = result[0];
                 const user = result[0];
-                jwt.sign({user}, 'secretkey', (err, token) => {
-                    response.json({
-                        token
-                    })
-                })
+                let token = jwt.sign({ user }, 'secretkey' , { expiresIn: '1 days'});
+                response.cookie('auth', token);
+                console.log('token =', token);
                 response.redirect('/accueil');
             }
             else {
@@ -296,12 +296,9 @@ app.post('/file-upload', (request, response) => {
   form.parse(request, async function (err, fields, files) {
     let UploadFile = require('./models/uploadFile')
       let file = files.filetoupload;
-      // console.log('file=', file);
       let idUser = (request.session.user && request.session.user.id) ? request.session.user.id : 1;
-      // console.log('user =', request.session.user);
       let fileUploaded = idUser + '_' + file.name;
       if (file.size != 0) {
-        //'D:\local\Temp\upload_187094a8095069fed1b8be299c53246f' -> 'D:localTemp 3_alias.png'
           fs.renameSync(file.path, 'D:\\local\\Temp\\' + fileUploaded, function (err) {
               if (err) {
                   throw err

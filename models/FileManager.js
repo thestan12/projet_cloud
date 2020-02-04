@@ -14,6 +14,15 @@ FileManager = {
             callback(JSON.parse(JSON.stringify(result)));
             });
     },
+    findAllFiles: function(request, callback) {
+        connection.query('SELECT * FROM filesuser', function(err, result) {
+            if(err) {
+                throw err;
+            }
+
+            callback(JSON.parse(JSON.stringify(result)));
+            });
+    },
 
     deleteFile: function(request, callback) {
         let id = request.session.user.id;
