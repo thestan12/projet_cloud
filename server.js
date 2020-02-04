@@ -283,15 +283,6 @@ app.post('/delete-file', async function (request, response)  {
   await executeDelete(request.session.user.id+'-'+request.session.user.last_name, request.session.user.id+'_'+request.body.fileName.fileName);
 });
 
-
-app.post('/download-file', async function (request, response)  {
-  console.log('hello world');
-  await console.log(blobService.getUrl(request.session.user.id+'-'+request.session.user.last_name, request.session.user.id+'_'+request.body.fileName.fileName));
-  await open(blobService.getUrl(request.session.user.id+'-'+request.session.user.last_name, request.session.user.id+'_'+request.body.fileName.fileName));
-  //await executeDownload(request.session.user.id+'-'+request.session.user.last_name, request.session.user.id+'_'+request.body.fileName.fileName);
-});
-
-
 //if (process.env.NODE_ENV !== 'production') {
     require('dotenv').config({path:'./.env'});
 //}
@@ -320,12 +311,14 @@ app.post('/file-upload', (request, response) => {
         let date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
         let time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
         let dateTime = date+' '+time;
+          await executeUpload('D:\\local\\Temp\\'+fileUploaded, request.session.user.id+'-'+request.session.user.last_name);
+          const url = blobService.getUrl(request.session.user.id+'-'+request.session.user.last_name, request.session.user.id+'_'+file.name);
           let content = {
             fileName: file.name,
             userId: request.session.user.id,
-            date: dateTime
+            date: dateTime,
+            url: url
           }
-          await executeUpload('D:\\local\\Temp\\'+fileUploaded, request.session.user.id+'-'+request.session.user.last_name);
           UploadFile.update(request, content, function () {
             console.log('fileName is added to the dataBase');
           });
