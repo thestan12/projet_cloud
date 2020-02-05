@@ -284,7 +284,10 @@ fetchID.check(request, response, function (request, response, err, result) {
 });
 app.get('/files', (request, response) => {
     let FileManager = require('./models/FileManager');
-    FileManager.findFiles(request, function (result) {
+    let content = {
+      id = request.session.user.id;
+    }
+    FileManager.findFiles(content, function (result) {
       console.log('result =', result);
         response.json(result);
     });

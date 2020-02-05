@@ -22,6 +22,15 @@ class flashDataBase {
         })
 
     }
+
+    static allUsers(content, cb) {
+        connection.query("SELECT * FROM userclient", (err, rows) => {
+            if (err) throw err;
+            cb(err,rows);
+
+        })
+
+    }
 }
 
 module.exports = flashDataBase;

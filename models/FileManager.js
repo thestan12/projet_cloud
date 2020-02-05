@@ -3,7 +3,7 @@ let connection = require('../config/db');
 FileManager = {
 
     findFiles: function(request, callback) {
-        let id = request.session.user.id;
+        let id = request.id;
 
         connection.query('SELECT * FROM filesuser WHERE userId=?',
             [id], function(err, result) {
@@ -19,7 +19,6 @@ FileManager = {
             if(err) {
                 throw err;
             }
-
             callback(JSON.parse(JSON.stringify(result)));
             });
     },
