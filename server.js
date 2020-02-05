@@ -220,7 +220,7 @@ app.get('/find-all-files', verifyToken, (req,res) => {
 
 app.get('/all-users', (request, response) => {
   let flashDataBase = require("./models/flashDataBase")
-  flashDataBase.all({}, function (err, user) {
+  flashDataBase.allUsers({}, function (err, user) {
       response.json(result);
   });
 });
