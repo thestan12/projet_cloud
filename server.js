@@ -202,29 +202,7 @@ app.post('/passwordUpdate', (request, response) => {
     })
 });
 
-app.get('/files-for-test', verifyToken, (req,res) => {
-  jwt.verify(req.token, 'secretkey', {expiresIn: '600s'}, (err, authData) => {
-    if (err) {
-      res.sendStatus(403);
-    } else {
-      let FileManager = require('./models/FileManager');
-      FileManager.findFiles(request, function (result) {
-        res.json({
-          message: result,
-          authData
-        });
-      });
-    }
-  });
-});
-app.get('/all-files-without-jwt', (request, response) => {
-    let FileManager = require('./models/FileManager');
-    FileManager.findFiles(request, function (result) {
-      console.log('result =', result);
-        response.json(result);
-    });
-});
-app.get('/all-files-without-jwt', verifyToken, (req,res) => {
+app.get('/all-files', verifyToken, (req,res) => {
   jwt.verify(req.token, 'secretkey', {expiresIn: '600s'}, (err, authData) => {
     if (err) {
       res.sendStatus(403);
@@ -239,18 +217,19 @@ app.get('/all-files-without-jwt', verifyToken, (req,res) => {
     }
   });
 });
+
+app.get('/all-users', (request, response) => {
+  let flashDataBase = require("./models/flashDataBase")
+  flashDataBase.all(req.body, function (err, user) {
+      response.json(result);
+  });
+});
+
+
 app.get('/token', function(request, response) {
   console.log('token =', request.session.token);
   response.json(request.session.token);
 })
-
-app.get('/files-with-id', (request, response) => {
-    let FileManager = require('./models/FileManager');
-    FileManager.findFiles(request, function (result) {
-      console.log('result =', result);
-        response.json(result);
-    });
-});
 
 // Verify Token
 function verifyToken(req, res, next) {
