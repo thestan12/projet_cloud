@@ -307,7 +307,7 @@ const blobService = storage.createBlobService();
 
 //file upload
 app.post('/file-upload', (request, response) => {
-  let form = new formidable.IncomingForm()console.log
+  let form = new formidable.IncomingForm();
   form.parse(request, async function (err, fields, files) {
     let UploadFile = require('./models/uploadFile')
       let file = files.filetoupload;
