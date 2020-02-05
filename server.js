@@ -89,8 +89,8 @@ app.post('/resetMdp', function (req, res, next) {
             var smtpTransport = nodemailer.createTransport('SMTP', {
                 service: 'SendGrid',
                 auth: {
-                    user: '!!! YOUR SENDGRID USERNAME !!!',
-                    pass: '!!! YOUR SENDGRID PASSWORD !!!'
+                    user: 'userName',
+                    pass: 'password'
                 }
             });
 
@@ -141,7 +141,7 @@ app.post('/', (request, response) => {
 
     });
 });
-app.post('/login', (request, response) => {
+app.post('/login', async (request, response) => {
   let fetchID = require("./models/fetchID")
 fetchID.check(request, response, function (request, response, err, result) {
     if (err) {
@@ -155,11 +155,10 @@ fetchID.check(request, response, function (request, response, err, result) {
                 request.session.password = request.body.psw;
                 request.session.user = result[0];
                 const user = result[0];
-                jwt.sign({user}, 'secretkey', (err, token) => {
-                    response.json({
-                        token
-                    })
-                })
+                let token = jwt.sign({ user }, 'secretkey' , { expiresIn: '1 days'});
+                response.cookie('auth', token);
+                request.session.token = token;
+                console.log('acess token =', token);
                 response.redirect('/accueil');
               } else {
                   request.flash('info', err ? 'Erreur interne est survenue!' : 'Adresse email ou mot de passe ne correspondent pas!')
@@ -203,13 +202,13 @@ app.post('/passwordUpdate', (request, response) => {
     })
 });
 
-app.get('/all-files', verifyToken, (req,res) => {
+app.get('/files-for-test', verifyToken, (req,res) => {
   jwt.verify(req.token, 'secretkey', {expiresIn: '600s'}, (err, authData) => {
     if (err) {
       res.sendStatus(403);
     } else {
       let FileManager = require('./models/FileManager');
-      FileManager.findAllFiles(req, function (result) {
+      FileManager.findFiles(request, function (result) {
         res.json({
           message: result,
           authData
@@ -218,13 +217,17 @@ app.get('/all-files', verifyToken, (req,res) => {
     }
   });
 });
+app.get('/token', function(request, response) {
+  console.log('token =', request.session.token);
+  response.json(request.session.token);
+})
 
-app.get('/files-with-id', verifyToken, (req,res) => {
-  let FileManager = require('./models/FileManager');
-  FileManager.findFiles(request, function (result) {
-    // console.log('result =', result);
-      response.json(result);
-  });
+app.get('/files-with-id', (request, response) => {
+    let FileManager = require('./models/FileManager');
+    FileManager.findFiles(request, function (result) {
+      console.log('result =', result);
+        response.json(result);
+    });
 });
 
 // Verify Token
@@ -256,10 +259,11 @@ fetchID.check(request, response, function (request, response, err, result) {
                 request.session.password = request.body.psw;
                 request.session.user = result[0];
                 const user = result[0];
-                let token = jwt.sign({ user }, 'secretkey' , { expiresIn: '1 days'});
-                response.cookie('auth', token);
-                request.session.token = token;
-                console.log('acess token =', token);
+                jwt.sign({user}, 'secretkey', (err, token) => {
+                    response.json({
+                        token
+                    })
+                })
                 response.redirect('/accueil');
             }
             else {
@@ -278,23 +282,17 @@ fetchID.check(request, response, function (request, response, err, result) {
 });
 });
 app.get('/files', (request, response) => {
-    console.log('token =', request.session.token);
     let FileManager = require('./models/FileManager');
     FileManager.findFiles(request, function (result) {
-      // console.log('result =', result);
+      console.log('result =', result);
         response.json(result);
     });
 });
 
-app.get('/token', function(request, response) {
-  console.log('token =', request.session.token);
-  response.json(request.session.token);
-})
-
 app.post('/delete-file', async function (request, response)  {
   let FileManager = require('./models/FileManager');
   FileManager.deleteFile(request, function (result) {
-    // console.log('result = ', result);
+    console.log('result = ', result);
   });
   await executeDelete(request.session.user.id+'-'+request.session.user.last_name, request.session.user.id+'_'+request.body.fileName.fileName);
 });
@@ -308,7 +306,7 @@ const blobService = storage.createBlobService();
 
 //file upload
 app.post('/file-upload', (request, response) => {
-  let form = new formidable.IncomingForm();
+  let form = new formidable.IncomingForm()
   form.parse(request, async function (err, fields, files) {
     let UploadFile = require('./models/uploadFile')
       let file = files.filetoupload;
