@@ -278,6 +278,7 @@ fetchID.check(request, response, function (request, response, err, result) {
 });
 });
 app.get('/files', (request, response) => {
+    console.log('token =', request.session.token);
     let FileManager = require('./models/FileManager');
     FileManager.findFiles(request, function (result) {
       // console.log('result =', result);
@@ -286,7 +287,7 @@ app.get('/files', (request, response) => {
 });
 
 app.get('/token', function(request, response) {
-  // console.log('token =', request.session.token);
+  console.log('token =', request.session.token);
   response.json(request.session.token);
 })
 
