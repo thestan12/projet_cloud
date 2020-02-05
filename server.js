@@ -203,7 +203,7 @@ app.post('/passwordUpdate', (request, response) => {
     })
 });
 
-app.get('/files-for-test', verifyToken, (req,res) => {
+app.get('/all-files', verifyToken, (req,res) => {
   jwt.verify(req.token, 'secretkey', {expiresIn: '600s'}, (err, authData) => {
     if (err) {
       res.sendStatus(403);
@@ -218,6 +218,15 @@ app.get('/files-for-test', verifyToken, (req,res) => {
     }
   });
 });
+
+app.get('/files-with-id', verifyToken, (req,res) => {
+  let FileManager = require('./models/FileManager');
+  FileManager.findFiles(request, function (result) {
+    // console.log('result =', result);
+      response.json(result);
+  });
+});
+
 // Verify Token
 function verifyToken(req, res, next) {
     // Get auth header value
@@ -251,7 +260,6 @@ fetchID.check(request, response, function (request, response, err, result) {
                 response.cookie('auth', token);
                 request.session.token = token;
                 console.log('acess token =', token);
-                console.log('token =', token);
                 response.redirect('/accueil');
             }
             else {
@@ -272,20 +280,20 @@ fetchID.check(request, response, function (request, response, err, result) {
 app.get('/files', (request, response) => {
     let FileManager = require('./models/FileManager');
     FileManager.findFiles(request, function (result) {
-      console.log('result =', result);
+      // console.log('result =', result);
         response.json(result);
     });
 });
 
 app.get('/token', function(request, response) {
-  console.log('token =', request.session.token);
+  // console.log('token =', request.session.token);
   response.json(request.session.token);
 })
 
 app.post('/delete-file', async function (request, response)  {
   let FileManager = require('./models/FileManager');
   FileManager.deleteFile(request, function (result) {
-    console.log('result = ', result);
+    // console.log('result = ', result);
   });
   await executeDelete(request.session.user.id+'-'+request.session.user.last_name, request.session.user.id+'_'+request.body.fileName.fileName);
 });
@@ -299,7 +307,7 @@ const blobService = storage.createBlobService();
 
 //file upload
 app.post('/file-upload', (request, response) => {
-  let form = new formidable.IncomingForm()
+  let form = new formidable.IncomingForm()console.log
   form.parse(request, async function (err, fields, files) {
     let UploadFile = require('./models/uploadFile')
       let file = files.filetoupload;
