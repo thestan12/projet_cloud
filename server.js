@@ -221,7 +221,7 @@ app.get('/find-all-files', verifyToken, (req,res) => {
 app.get('/all-users', (request, response) => {
   let flashDataBase = require("./models/flashDataBase")
   flashDataBase.allUsers({}, function (err, user) {
-      response.json(result);
+      response.json(user);
   });
 });
 
