@@ -23,6 +23,15 @@
   <%- include('header-authenticated') %>
   <div class="mx-2 row">
     <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      fetch('/token', {}).then(function (response) {
+        return response.json();
+      }).then(function(data) {
+        if (typeof(Storage) !== "undefined") {
+          localStorage.setItem("token", data);
+        }
+      });
+    });
 		function fileDelete(val) {
 	  		fetch('/files', {}).then(function (response) {
 	      		return response.json();

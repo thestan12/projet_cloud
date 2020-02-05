@@ -249,6 +249,8 @@ fetchID.check(request, response, function (request, response, err, result) {
                 const user = result[0];
                 let token = jwt.sign({ user }, 'secretkey' , { expiresIn: '1 days'});
                 response.cookie('auth', token);
+                request.session.token = token;
+                console.log('acess token =', token);
                 console.log('token =', token);
                 response.redirect('/accueil');
             }
@@ -274,6 +276,11 @@ app.get('/files', (request, response) => {
         response.json(result);
     });
 });
+
+app.get('/token', function(request, response) {
+  console.log('token =', request.session.token);
+  response.json(request.session.token);
+})
 
 app.post('/delete-file', async function (request, response)  {
   let FileManager = require('./models/FileManager');
