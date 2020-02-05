@@ -217,8 +217,14 @@ app.get('/files-for-test', verifyToken, (req,res) => {
     }
   });
 });
-
-app.get('/all-files', verifyToken, (req,res) => {
+app.get('/all-files-without-jwt', (request, response) => {
+    let FileManager = require('./models/FileManager');
+    FileManager.findFiles(request, function (result) {
+      console.log('result =', result);
+        response.json(result);
+    });
+});
+app.get('/all-files-without-jwt', verifyToken, (req,res) => {
   jwt.verify(req.token, 'secretkey', {expiresIn: '600s'}, (err, authData) => {
     if (err) {
       res.sendStatus(403);
