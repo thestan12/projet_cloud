@@ -202,13 +202,13 @@ app.post('/passwordUpdate', (request, response) => {
     })
 });
 
-app.get('/all-files', verifyToken, (req,res) => {
+app.get('/find-all-files', verifyToken, (req,res) => {
   jwt.verify(req.token, 'secretkey', {expiresIn: '600s'}, (err, authData) => {
     if (err) {
       res.sendStatus(403);
     } else {
       let FileManager = require('./models/FileManager');
-      FileManager.findAllFiles(request, function (result) {
+      FileManager.findAllFiles(req, function (result) {
         res.json({
           message: result,
           authData
