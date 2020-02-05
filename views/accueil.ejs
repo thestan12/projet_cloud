@@ -39,7 +39,8 @@
 		        let file = {
 		            fileName: data[val]
 		        }
-		        fetch('/delete-file', {
+		        //fetch('/delete-file', {
+              fetch('https://ufesgi.azurewebsites.net/api/deleteFile', {
 		            method: 'POST',
 		            body: JSON.stringify(file),
 		            headers: {
